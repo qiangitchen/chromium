@@ -23,6 +23,16 @@
 </dependency>
 ```
 
+- Mac OS x x86_64
+```
+<dependency>
+  <groupId>com.tlv8.chromium</groupId>
+  <artifactId>tlv8.swt.browser.chromium.macosx.x86_64</artifactId>
+  <version>1.0.0-RELEASE</version>
+  <type>pom</type>
+</dependency>
+```
+
 2. Use
 
 ```
