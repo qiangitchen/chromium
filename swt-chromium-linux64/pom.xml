@@ -6,6 +6,7 @@
 	
 	<name>tlv8.swt.browser.chromium.gtk.linux.x86_64</name>
 	<description>Chrome browser based on eclipse swt</description>
+	<url>https://github.com/qiangitchen/chromium</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -130,9 +131,9 @@
 	</profiles>
 
 	<scm>
-		<url>https://gitee.com/qiangitchen/chromium</url>
-		<connection>scm:git:git@gitee.com:qiangitchen/chromium.git</connection>
-		<developerConnection>scm:git:git@gitee.com:qiangitchen/chromium.git</developerConnection>
+		<url>https://github.com/qiangitchen/chromium</url>
+		<connection>scm:git:git@github.com:qiangitchen/chromium.git</connection>
+		<developerConnection>scm:git:git@github.com:qiangitchen/chromium.git</developerConnection>
 	</scm>
 
 	<developers>
