@@ -3,6 +3,9 @@
 	<groupId>com.tlv8.chromium</groupId>
 	<artifactId>tlv8.swt.browser.chromium.win32.win32.x86_64</artifactId>
 	<version>1.0.0-RELEASE</version>
+	
+	<name>tlv8.swt.browser.chromium.win32.win32.x86_64</name>
+	<description>Chrome browser based on eclipse swt</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
