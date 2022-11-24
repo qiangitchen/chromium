@@ -1,8 +1,9 @@
 # chromium
 
-1. Windows x86_64
 
-pom
+1. pom
+
+- Windows x86_64
 ```
 <dependency>
   <groupId>com.tlv8.chromium</groupId>
@@ -12,7 +13,17 @@ pom
 </dependency>
 ```
 
-4.Use
+- Linux x86_64
+```
+<dependency>
+  <groupId>com.tlv8.chromium</groupId>
+  <artifactId>tlv8.swt.browser.chromium.gtk.linux.x86_64</artifactId>
+  <version>1.0.0-RELEASE</version>
+  <type>pom</type>
+</dependency>
+```
+
+2. Use
 
 ```
 import com.tulin.v8.swt.chromium.Browser;
