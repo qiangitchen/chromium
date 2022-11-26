@@ -33,11 +33,28 @@
 2. Use
 
 ```
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+
 import com.tulin.v8.swt.chromium.Browser;
-public class SinglePagePart {
-	public void createBrowser(Composite parent, String url) {
-		Browser browser = new Browser(parent, SWT.NONE);
-		browser.setUrl(url);
+
+public class BrowserTest {
+	public static void main(String[] args) {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		shell.setLayout(new FillLayout());
+		shell.open();
+		Browser browser = new Browser(shell, SWT.NONE);
+		shell.requestLayout();
+		browser.setUrl("https://tlv8.com");
+
+		while (!shell.isDisposed()) {
+			if (display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
 	}
 }
 ```
