@@ -1,0 +1,172 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.tlv8.chromium</groupId>
+	<artifactId>tlv8.swt.browser.chromium.macosx.aarch64</artifactId>
+	<version>2.0.0</version>
+	
+	<name>tlv8.swt.browser.chromium.macosx.aarch64</name>
+	<description>Chrome browser based on eclipse swt</description>
+	<url>https://github.com/qiangitchen/chromium</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>17</java.version>
+	</properties>
+
+	<dependencies>
+		<!--swt相关依赖-->
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.swt.cocoa.macosx.aarch64</artifactId>
+			<version>3.125.0</version>
+		</dependency>
+		<!-- jface -->
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.jface</artifactId>
+			<version>3.33.0</version>
+		</dependency>
+		<!-- jcef api -->
+		<dependency>
+			<groupId>me.friwi</groupId>
+			<artifactId>jcefmaven</artifactId>
+			<version>122.1.10</version>
+		</dependency>
+		<!-- Macosx arm64-->
+		<dependency>
+			<groupId>me.friwi</groupId>
+			<artifactId>jcef-natives-macosx-arm64</artifactId>
+			<version>jcef-0b8e42e+cef-122.1.10+gc902316+chromium-122.0.6261.112</version>
+		</dependency>
+		<!-- ali fastjson -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>2.0.49</version>
+		</dependency>
+	</dependencies>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<distributionManagement>
+		<repository>
+			<!--这两个id需要和setting.xml文件中的server字段的id进行对应-->
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<profiles>
+		<profile>
+			<id>jdk17</id>
+			<activation>
+				<jdk>17</jdk>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<maven.compiler.source>17</maven.compiler.source>
+				<maven.compiler.target>17</maven.compiler.target>
+				<maven.compiler.compilerVersion>17</maven.compiler.compilerVersion>
+			</properties>
+		</profile>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-release-plugin</artifactId>
+						<version>2.5.3</version>
+						<configuration>
+							<autoVersionSubmodules>true</autoVersionSubmodules>
+							<useReleaseProfile>false</useReleaseProfile>
+							<releaseProfiles>release</releaseProfiles>
+							<goals>deploy</goals>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.0</version>
+						<configuration>
+							<source>${java.version}</source>
+							<target>${java.version}</target>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<!-- java8版本导致javadoc打包编译失败时候，添加-->
+								<configuration>
+									<failOnError>false</failOnError>
+									<doclint>none</doclint>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<scm>
+		<url>https://gitee.com/qiangitchen/chromium</url>
+		<connection>scm:git:git@gitee.com:qiangitchen/chromium.git</connection>
+		<developerConnection>scm:git:git@gitee.com:qiangitchen/chromium.git</developerConnection>
+	</scm>
+
+	<developers>
+		<developer>
+			<name>chenqian</name>
+			<email>qianpou@163.com</email>
+			<url>https://gitee.com/qianpou</url>
+		</developer>
+	</developers>
+
+
+</project>
