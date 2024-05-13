@@ -13,9 +13,13 @@ import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.browser.CefMessageRouter;
+import org.cef.callback.CefAuthCallback;
+import org.cef.callback.CefBeforeDownloadCallback;
+import org.cef.callback.CefDownloadItem;
 import org.cef.callback.CefQueryCallback;
 import org.cef.callback.CefStringVisitor;
 import org.cef.handler.CefDisplayHandlerAdapter;
+import org.cef.handler.CefDownloadHandlerAdapter;
 import org.cef.handler.CefLifeSpanHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.handler.CefMessageRouterHandlerAdapter;
@@ -26,6 +30,8 @@ import org.cef.network.CefRequest;
 import org.cef.network.CefRequest.TransitionType;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.browser.AuthenticationEvent;
+import org.eclipse.swt.browser.AuthenticationListener;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.ProgressEvent;
@@ -213,6 +219,35 @@ public class Chromiu extends WebBrowser {
 				for (StatusTextListener statusTextListener : statusTextListeners) {
 					statusTextListener.changed(sevent);
 				}
+			}
+		});
+		client.removeRequestHandler();
+		client.addRequestHandler(new CefRequestHandlerAdapter() {
+			@Override
+			public boolean getAuthCredentials(CefBrowser browser, String origin_url, boolean isProxy, String host,
+					int port, String realm, String scheme, CefAuthCallback callback) {
+				if (authenticationListeners.length > 0) {
+					AuthenticationEvent aevent = new AuthenticationEvent(parent);
+					aevent.location = origin_url;
+					for (AuthenticationListener authenticationListeners : authenticationListeners) {
+						authenticationListeners.authenticate(aevent);
+					}
+					if (aevent.doit) {
+						callback.Continue(aevent.user, aevent.password);
+					} else {
+						callback.cancel();
+					}
+					return true;
+				}
+				return super.getAuthCredentials(browser, origin_url, isProxy, host, port, realm, scheme, callback);
+			}
+		});
+		client.removeDownloadHandler();
+		client.addDownloadHandler(new CefDownloadHandlerAdapter() {
+			@Override
+			public void onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem, String suggestedName,
+					CefBeforeDownloadCallback callback) {
+				callback.Continue("", true);
 			}
 		});
 		// 注册通用JS回调函数
