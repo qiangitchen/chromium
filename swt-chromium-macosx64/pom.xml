@@ -1,8 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.tlv8.chromium</groupId>
+	
+	<parent>
+		<groupId>com.tlv8.chromium</groupId>
+		<artifactId>tlv8.swt.browser.chromium</artifactId>
+		<version>2.1.0</version>
+	</parent>
+	
 	<artifactId>tlv8.swt.browser.chromium.macosx.x86_64</artifactId>
-	<version>2.0.0</version>
 	
 	<name>tlv8.swt.browser.chromium.macosx.x86_64</name>
 	<description>Chrome browser based on eclipse swt</description>
@@ -19,31 +24,31 @@
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
-			<version>3.125.0</version>
+			<version>3.127.0</version>
 		</dependency>
 		<!-- jface -->
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.jface</artifactId>
-			<version>3.33.0</version>
+			<version>3.35.0</version>
 		</dependency>
 		<!-- jcef api -->
 		<dependency>
 			<groupId>me.friwi</groupId>
 			<artifactId>jcefmaven</artifactId>
-			<version>108.4.13</version>
+			<version>127.3.1</version>
 		</dependency>
 		<!-- MacOS x86_64 -->
 		<dependency>
 			<groupId>me.friwi</groupId>
 			<artifactId>jcef-natives-macosx-amd64</artifactId>
-			<version>jcef-0b8e42e+cef-122.1.10+gc902316+chromium-122.0.6261.112</version>
+			<version>jcef-99c2f7a+cef-127.3.1+g6cbb30e+chromium-127.0.6533.100</version>
 		</dependency>
 		<!-- ali fastjson -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>2.0.49</version>
+			<version>2.0.53</version>
 		</dependency>
 	</dependencies>
 
@@ -155,16 +160,16 @@
 	</profiles>
 
 	<scm>
-		<url>https://gitee.com/qiangitchen/chromium</url>
-		<connection>scm:git:git@gitee.com:qiangitchen/chromium.git</connection>
-		<developerConnection>scm:git:git@gitee.com:qiangitchen/chromium.git</developerConnection>
+		<url>https://github.com/qiangitchen/chromium</url>
+		<connection>scm:git:git@github.com:qiangitchen/chromium.git</connection>
+		<developerConnection>scm:git:git@github.com:qiangitchen/chromium.git</developerConnection>
 	</scm>
 
 	<developers>
 		<developer>
 			<name>chenqian</name>
 			<email>qianpou@163.com</email>
-			<url>https://gitee.com/qianpou</url>
+			<url>https://github.com/qiangitchen</url>
 		</developer>
 	</developers>
 

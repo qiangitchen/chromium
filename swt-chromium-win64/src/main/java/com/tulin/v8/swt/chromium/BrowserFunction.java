@@ -91,7 +91,6 @@ public class BrowserFunction {
 									arguments[i] = params.get(i);
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
 								arguments = new Object[] { request };
 							}
 							Object re = function(arguments);

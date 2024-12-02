@@ -10,20 +10,24 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.cef.CefClient;
+import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.browser.CefMessageRouter;
 import org.cef.callback.CefAuthCallback;
-import org.cef.callback.CefBeforeDownloadCallback;
-import org.cef.callback.CefDownloadItem;
+import org.cef.callback.CefJSDialogCallback;
 import org.cef.callback.CefQueryCallback;
 import org.cef.callback.CefStringVisitor;
+import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefDisplayHandlerAdapter;
-import org.cef.handler.CefDownloadHandlerAdapter;
+import org.cef.handler.CefJSDialogHandlerAdapter;
+import org.cef.handler.CefKeyboardHandler;
+import org.cef.handler.CefKeyboardHandlerAdapter;
 import org.cef.handler.CefLifeSpanHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.handler.CefMessageRouterHandlerAdapter;
 import org.cef.handler.CefRequestHandlerAdapter;
+import org.cef.misc.BoolRef;
 import org.cef.network.CefPostData;
 import org.cef.network.CefPostDataElement;
 import org.cef.network.CefRequest;
@@ -44,9 +48,12 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ProgressBar;
 
+import com.tulin.v8.cef.BrowserFrame;
 import com.tulin.v8.cef.CefBrowserManager;
+import com.tulin.v8.cef.handler.KeyboardHandler;
 
 /**
  * CefBrowser的嵌套和调用类
@@ -57,10 +64,11 @@ public class Chromiu extends WebBrowser {
 	private final CefClient client;
 	private final CefBrowser cefbrowser;
 	private final Component browerUI;
-	private final String startUrl;
+
+	protected final String startUrl;
 
 	private Composite parent = null;
-	private boolean loadding = false;
+//	private boolean loadding = false;
 	private ProgressBar progressBar;
 
 	public Chromiu(String startUrl) {
@@ -80,6 +88,8 @@ public class Chromiu extends WebBrowser {
 		mlay.marginTop = 0;
 		mlay.marginRight = 0;
 		mlay.marginBottom = 0;
+		mlay.marginWidth = 0;
+		mlay.marginHeight = 0;
 		parent.setLayout(mlay);
 		GridData ply = new GridData(GridData.FILL_HORIZONTAL);
 		ply.heightHint = 2;
@@ -92,15 +102,15 @@ public class Chromiu extends WebBrowser {
 		Frame awtframe = SWT_AWT.new_Frame(composite);
 		awtframe.setLayout(new BorderLayout());
 		awtframe.add(browerUI, BorderLayout.CENTER);
-		if (startUrl != null && !"".equals(startUrl)) {
-			loadding = true;
-		}
+//		if (startUrl != null && !"".equals(startUrl)) {
+//			loadding = true;
+//		}
 		client.removeLoadHandler();
 		client.addLoadHandler(new CefLoadHandlerAdapter() {
 			@Override
 			public void onLoadingStateChange(CefBrowser browser, boolean isLoading, boolean canGoBack,
 					boolean canGoForward) {
-				loadding = isLoading;
+//				loadding = isLoading;
 				showProgressBar(isLoading);
 				LoadEvent levent = new LoadEvent(parent);
 				levent.browser = browser;
@@ -114,7 +124,7 @@ public class Chromiu extends WebBrowser {
 
 			@Override
 			public void onLoadStart(CefBrowser browser, CefFrame frame, TransitionType transitionType) {
-				loadding = true;
+//				loadding = true;
 				ProgressEvent pevent = new ProgressEvent(parent);
 				pevent.current = 0;
 				pevent.total = 100;
@@ -132,7 +142,7 @@ public class Chromiu extends WebBrowser {
 
 			@Override
 			public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
-				loadding = false;
+//				loadding = false;
 				ProgressEvent pevent = new ProgressEvent(parent);
 				pevent.current = 100;
 				pevent.total = 100;
@@ -151,7 +161,7 @@ public class Chromiu extends WebBrowser {
 			@Override
 			public void onLoadError(CefBrowser browser, CefFrame frame, ErrorCode errorCode, String errorText,
 					String failedUrl) {
-				loadding = false;
+//				loadding = false;
 				LoadEvent levent = new LoadEvent(parent);
 				levent.browser = browser;
 				levent.frame = frame;
@@ -176,8 +186,10 @@ public class Chromiu extends WebBrowser {
 						openWindowListener.open(wevent);
 					}
 					return wevent.required;
+				} else {
+					new BrowserFrame(target_url, false, false).open();
+					return true;// 返回true表示取消弹出窗口
 				}
-				return false;
 			}
 
 			@Override
@@ -191,6 +203,33 @@ public class Chromiu extends WebBrowser {
 				return wevent.required;
 			}
 		});
+		// 处理键盘事件
+		client.removeKeyboardHandler();
+		addCefKeyboardHandler(new KeyboardHandler());
+		client.addKeyboardHandler(new CefKeyboardHandlerAdapter() {
+			@Override
+			public boolean onPreKeyEvent(CefBrowser browser, CefKeyEvent event, BoolRef is_keyboard_shortcut) {
+				boolean res = false;
+				for (CefKeyboardHandler cefKeyboardHandler : cefKeyboardHandlers) {
+					boolean r = cefKeyboardHandler.onPreKeyEvent(browser, event, is_keyboard_shortcut);
+					if (r) {
+						res = r;
+					}
+				}
+				return res;
+			}
+
+			public boolean onKeyEvent(CefBrowser browser, CefKeyEvent event) {
+				boolean res = false;
+				for (CefKeyboardHandler cefKeyboardHandler : cefKeyboardHandlers) {
+					boolean r = cefKeyboardHandler.onKeyEvent(browser, event);
+					if (r) {
+						res = r;
+					}
+				}
+				return res;
+			}
+		});
 		client.removeDisplayHandler();
 		client.addDisplayHandler(new CefDisplayHandlerAdapter() {
 			@Override
@@ -199,6 +238,9 @@ public class Chromiu extends WebBrowser {
 				tevent.title = title;
 				for (TitleListener titleListener : titleListeners) {
 					titleListener.changed(tevent);
+				}
+				for (CefDisplayHandler cefDisplayHandlers : cefDisplayHandlers) {
+					cefDisplayHandlers.onTitleChange(browser, title);
 				}
 			}
 
@@ -210,6 +252,20 @@ public class Chromiu extends WebBrowser {
 					locationListener.changing(levent);
 					locationListener.changed(levent);
 				}
+				for (CefDisplayHandler cefDisplayHandlers : cefDisplayHandlers) {
+					cefDisplayHandlers.onAddressChange(browser, frame, url);
+				}
+			}
+
+			@Override
+			public boolean onTooltip(CefBrowser browser, String text) {
+				boolean res = false;
+				for (CefDisplayHandler cefDisplayHandlers : cefDisplayHandlers) {
+					if (cefDisplayHandlers.onTooltip(browser, text)) {
+						res = true;
+					}
+				}
+				return res;
 			}
 
 			@Override
@@ -219,7 +275,40 @@ public class Chromiu extends WebBrowser {
 				for (StatusTextListener statusTextListener : statusTextListeners) {
 					statusTextListener.changed(sevent);
 				}
+				for (CefDisplayHandler cefDisplayHandlers : cefDisplayHandlers) {
+					cefDisplayHandlers.onStatusMessage(browser, value);
+				}
 			}
+
+			@Override
+			public boolean onConsoleMessage(CefBrowser browser, CefSettings.LogSeverity level, String message,
+					String source, int line) {
+				boolean res = false;
+				for (CefDisplayHandler cefDisplayHandlers : cefDisplayHandlers) {
+					if (cefDisplayHandlers.onConsoleMessage(browser, level, message, source, line)) {
+						res = true;
+					}
+				}
+				return res;
+			}
+
+			@Override
+			public boolean onCursorChange(CefBrowser browser, int cursorType) {
+				boolean res = false;
+				for (CefDisplayHandler cefDisplayHandlers : cefDisplayHandlers) {
+					if (cefDisplayHandlers.onCursorChange(browser, cursorType)) {
+						res = true;
+					}
+				}
+				return res;
+			}
+
+//			@Override
+//			public void onFullscreenModeChange(CefBrowser browser, boolean fullscreen) {
+//				for (CefDisplayHandler cefDisplayHandlers : cefDisplayHandlers) {
+//					cefDisplayHandlers.onFullscreenModeChange(browser, fullscreen);
+//				}
+//			}
 		});
 		client.removeRequestHandler();
 		client.addRequestHandler(new CefRequestHandlerAdapter() {
@@ -242,12 +331,49 @@ public class Chromiu extends WebBrowser {
 				return super.getAuthCredentials(browser, origin_url, isProxy, host, port, realm, scheme, callback);
 			}
 		});
-		client.removeDownloadHandler();
-		client.addDownloadHandler(new CefDownloadHandlerAdapter() {
+//		client.removeDownloadHandler();
+//		client.addDownloadHandler(new CefDownloadHandlerAdapter() {
+//			@Override
+//			public boolean onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem, String suggestedName,
+//					CefBeforeDownloadCallback callback) {
+//				callback.Continue("", true);
+//				return true;
+//			}
+//
+//			@Override
+//			public void onDownloadUpdated(CefBrowser browser, CefDownloadItem downloadItem,
+//					CefDownloadItemCallback callback) {
+//				showDownLoadDialog(browser, downloadItem, callback);
+//			}
+//		});
+		// 处理JS消息提示框
+		client.removeJSDialogHandler();
+		client.addJSDialogHandler(new CefJSDialogHandlerAdapter() {
 			@Override
-			public void onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem, String suggestedName,
-					CefBeforeDownloadCallback callback) {
-				callback.Continue("", true);
+			public boolean onJSDialog(CefBrowser browser, String origin_url, JSDialogType dialog_type,
+					String message_text, String default_prompt_text, CefJSDialogCallback callback,
+					BoolRef suppress_message) {
+				if (dialog_type == JSDialogType.JSDIALOGTYPE_ALERT) {
+					parent.getDisplay().asyncExec(() -> {
+						MessageBox alerts = new MessageBox(parent.getShell(), SWT.ICON_INFORMATION);
+						alerts.setText("提示");
+						alerts.setMessage(message_text);
+						alerts.open();
+						callback.Continue(true, null);
+					});
+				} else if (dialog_type == JSDialogType.JSDIALOGTYPE_CONFIRM) {
+					parent.getDisplay().asyncExec(() -> {
+						MessageBox confirms = new MessageBox(parent.getShell(),
+								SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+						confirms.setText("确认");
+						confirms.setMessage(message_text);
+						int c = confirms.open();
+						callback.Continue(c == SWT.OK, null);
+					});
+				} else {
+					return false;
+				}
+				return true;
 			}
 		});
 		// 注册通用JS回调函数
@@ -271,6 +397,22 @@ public class Chromiu extends WebBrowser {
 			progressBar.setVisible(isShow);
 		});
 	}
+
+//	private DownLoadDialog downLoadDialog;
+
+//	private void showDownLoadDialog(CefBrowser browser, CefDownloadItem downloadItem,
+//			CefDownloadItemCallback callback) {
+//		if (downloadItem.isValid() && downloadItem.getFullPath() != null) {
+//			parent.getDisplay().asyncExec(() -> {
+//				if (downLoadDialog == null || downLoadDialog.isDisposed()) {
+//					downLoadDialog = new DownLoadDialog(parent.getShell());
+//					downLoadDialog.setMessage(downloadItem.getFullPath());
+//					downLoadDialog.setFullPath(downloadItem.getFullPath());
+//					downLoadDialog.open();
+//				}
+//			});
+//		}
+//	}
 
 	protected CefClient getCefClient() {
 		return client;
@@ -407,23 +549,24 @@ public class Chromiu extends WebBrowser {
 	 * @return
 	 */
 	public synchronized boolean setUrl(String url) {
-		new Thread(() -> {
-			if (!loadding) {
-				try {
-					Thread.sleep(300);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			while (loadding && parent != null && !parent.isDisposed()) {
-				try {
-					Thread.sleep(1);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			cefbrowser.loadURL(url);
-		}).start();
+//		new Thread(() -> {
+//			if (!loadding) {
+//				try {
+//					Thread.sleep(300);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//			while (loadding && parent != null && !parent.isDisposed()) {
+//				try {
+//					Thread.sleep(1);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//			cefbrowser.loadURL(url);
+//		}).start();
+		cefbrowser.loadURL(url);
 		return true;
 	}
 

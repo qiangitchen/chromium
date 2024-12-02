@@ -8,6 +8,8 @@ import org.cef.browser.CefFrame;
 import org.cef.callback.CefContextMenuParams;
 import org.cef.callback.CefMenuModel;
 import org.cef.handler.CefContextMenuHandlerAdapter;
+import org.cef.handler.CefDisplayHandler;
+import org.cef.handler.CefKeyboardHandler;
 import org.cef.network.CefPostData;
 import org.eclipse.swt.*;
 import org.eclipse.swt.browser.AuthenticationListener;
@@ -140,6 +142,24 @@ public class Browser extends Composite {
 		if (listener == null)
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		webBrowser.addVisibilityWindowListener(listener);
+	}
+
+	public void addCefDisplayHandler(CefDisplayHandler cefDisplayHandler) {
+		checkWidget();
+		if (cefDisplayHandler == null)
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		webBrowser.addCefDisplayHandler(cefDisplayHandler);
+	}
+
+	public void addCefKeyboardHandler(CefKeyboardHandler cefKeyboardHandler) {
+		checkWidget();
+		if (cefKeyboardHandler == null)
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		webBrowser.addCefKeyboardHandler(cefKeyboardHandler);
+	}
+
+	public void removeCefKeyboardHandler(CefKeyboardHandler cefKeyboardHandler) {
+		webBrowser.removeCefKeyboardHandler(cefKeyboardHandler);
 	}
 
 	public boolean back() {
@@ -299,6 +319,13 @@ public class Browser extends Composite {
 		if (listener == null)
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		webBrowser.removeVisibilityWindowListener(listener);
+	}
+
+	public void removeCefDisplayHandler(CefDisplayHandler cefDisplayHandler) {
+		checkWidget();
+		if (cefDisplayHandler == null)
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		webBrowser.removeCefDisplayHandler(cefDisplayHandler);
 	}
 
 	public void setJavascriptEnabled(boolean enabled) {

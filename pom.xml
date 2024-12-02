@@ -1,15 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	
-	<parent>
-		<groupId>com.tlv8.chromium</groupId>
-		<artifactId>tlv8.swt.browser.chromium</artifactId>
-		<version>2.1.0</version>
-	</parent>
+	<groupId>com.tlv8.chromium</groupId>
+	<artifactId>tlv8.swt.browser.chromium</artifactId>
+	<version>2.1.0</version>
 	
-	<artifactId>tlv8.swt.browser.chromium.macosx.aarch64</artifactId>
+	<packaging>pom</packaging>
 	
-	<name>tlv8.swt.browser.chromium.macosx.aarch64</name>
+	<name>tlv8.swt.browser.chromium</name>
 	<description>Chrome browser based on eclipse swt</description>
 	<url>https://github.com/qiangitchen/chromium</url>
 
@@ -18,39 +18,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>17</java.version>
 	</properties>
-
-	<dependencies>
-		<!--swt相关依赖-->
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.swt.cocoa.macosx.aarch64</artifactId>
-			<version>3.127.0</version>
-		</dependency>
-		<!-- jface -->
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.jface</artifactId>
-			<version>3.35.0</version>
-		</dependency>
-		<!-- jcef api -->
-		<dependency>
-			<groupId>me.friwi</groupId>
-			<artifactId>jcefmaven</artifactId>
-			<version>127.3.1</version>
-		</dependency>
-		<!-- Macosx arm64-->
-		<dependency>
-			<groupId>me.friwi</groupId>
-			<artifactId>jcef-natives-macosx-arm64</artifactId>
-			<version>jcef-99c2f7a+cef-127.3.1+g6cbb30e+chromium-127.0.6533.100</version>
-		</dependency>
-		<!-- ali fastjson -->
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>2.0.53</version>
-		</dependency>
-	</dependencies>
 
 	<licenses>
 		<license>
@@ -63,13 +30,22 @@
 		<repository>
 			<!--这两个id需要和setting.xml文件中的server字段的id进行对应-->
 			<id>ossrh</id>
-			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<url>
+				https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 		<snapshotRepository>
 			<id>ossrh</id>
 			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<modules>
+		<module>swt-chromium-linux64</module>
+		<module>swt-chromium-linux-arm64</module>
+		<module>swt-chromium-macosx64</module>
+		<module>swt-chromium-macosx-arm64</module>
+		<module>swt-chromium-win64</module>
+	</modules>
 
 	<profiles>
 		<profile>

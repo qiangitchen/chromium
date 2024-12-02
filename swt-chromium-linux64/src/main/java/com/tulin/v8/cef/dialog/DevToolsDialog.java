@@ -14,7 +14,6 @@ import org.cef.browser.CefBrowser;
 
 /**
  * 开发者工具弹窗类
- * 
  * @author 陈乾
  */
 public class DevToolsDialog extends JDialog {
@@ -28,7 +27,6 @@ public class DevToolsDialog extends JDialog {
 
 	public DevToolsDialog(JFrame owner, String title, CefBrowser browser, Point inspectAt) {
 		super(owner, title, false);
-		// setIconImage(ImageUtils.getImage("/image/icon/logo32.png"));
 		setLayout(new BorderLayout());
 		// 使用Toolkit可以获得本机系统的屏幕的参数
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

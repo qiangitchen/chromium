@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.cef.handler.CefDisplayHandler;
+import org.cef.handler.CefKeyboardHandler;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.browser.AuthenticationListener;
@@ -26,6 +28,8 @@ abstract class WebBrowser {
 	TitleListener[] titleListeners = new TitleListener[0];
 	LoadListener[] loadListeners = new LoadListener[0];
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
+	List<CefDisplayHandler> cefDisplayHandlers = new ArrayList<>();
+	List<CefKeyboardHandler> cefKeyboardHandlers = new ArrayList<>();
 	boolean jsEnabledOnNextPage = true, jsEnabled = true;
 	Object evaluateResult;
 
@@ -145,6 +149,24 @@ abstract class WebBrowser {
 				visibilityWindowListeners.length);
 		visibilityWindowListeners = newVisibilityWindowListeners;
 		visibilityWindowListeners[visibilityWindowListeners.length - 1] = listener;
+	}
+
+	public void addCefDisplayHandler(CefDisplayHandler cefDisplayHandler) {
+		removeCefDisplayHandler(cefDisplayHandler);
+		cefDisplayHandlers.add(cefDisplayHandler);
+	}
+
+	public void removeCefDisplayHandler(CefDisplayHandler cefDisplayHandler) {
+		cefDisplayHandlers.remove(cefDisplayHandler);
+	}
+
+	public void addCefKeyboardHandler(CefKeyboardHandler cefKeyboardHandler) {
+		removeCefKeyboardHandler(cefKeyboardHandler);
+		cefKeyboardHandlers.add(cefKeyboardHandler);
+	}
+
+	public void removeCefKeyboardHandler(CefKeyboardHandler cefKeyboardHandler) {
+		cefKeyboardHandlers.remove(cefKeyboardHandler);
 	}
 
 	public abstract boolean back();

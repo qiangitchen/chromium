@@ -1,8 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.tlv8.chromium</groupId>
+	
+	<parent>
+		<groupId>com.tlv8.chromium</groupId>
+		<artifactId>tlv8.swt.browser.chromium</artifactId>
+		<version>2.1.0</version>
+	</parent>
+	
 	<artifactId>tlv8.swt.browser.chromium.win32.win32.x86_64</artifactId>
-	<version>2.0.0</version>
 	
 	<name>tlv8.swt.browser.chromium.win32.win32.x86_64</name>
 	<description>Chrome browser based on eclipse swt</description>
@@ -155,16 +160,16 @@
 	</profiles>
 
 	<scm>
-		<url>https://gitee.com/qiangitchen/chromium</url>
-		<connection>scm:git:git@gitee.com:qiangitchen/chromium.git</connection>
-		<developerConnection>scm:git:git@gitee.com:qiangitchen/chromium.git</developerConnection>
+		<url>https://github.com/qiangitchen/chromium</url>
+		<connection>scm:git:git@github.com:qiangitchen/chromium.git</connection>
+		<developerConnection>scm:git:git@github.com:qiangitchen/chromium.git</developerConnection>
 	</scm>
 
 	<developers>
 		<developer>
 			<name>chenqian</name>
 			<email>qianpou@163.com</email>
-			<url>https://gitee.com/qianpou</url>
+			<url>https://github.com/qiangitchen</url>
 		</developer>
 	</developers>
 
