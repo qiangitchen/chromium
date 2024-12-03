@@ -58,8 +58,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import com.tulin.v8.swt.chromium.Browser;
+import com.tulin.v8.swt.chromium.LoadEvent;
+import com.tulin.v8.swt.chromium.LoadListenerAdapter;
 
-public class BrowserTest {
+public class Main {
 	public static void main(String[] args) {
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display, SWT.MIN | SWT.MAX | SWT.CLOSE | SWT.RESIZE);
@@ -68,23 +70,25 @@ public class BrowserTest {
 		shell.setText("Chromium Test");
 		shell.setLocation(20, 20);
 
-		shell.open();
-
 		shell.setLayout(new FillLayout());
-		Browser browser = new Browser(shell, SWT.NONE);
+		Browser browser = new Browser(shell, SWT.NONE, "https://tlv8.com");
+		browser.addLoadListener(new LoadListenerAdapter() {
+			@Override
+			public void onLoadEnd(LoadEvent event) {
+				System.out.println("加载完成：" + event.httpStatusCode);
+				super.onLoadEnd(event);
+			}
+		});
 
-		shell.requestLayout();
-
-		browser.setUrl("https://tlv8.com");
+		shell.open();
 
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
-		
+
 		System.exit(0);
 	}
-
 }
 ```
 
