@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.swing.SwingUtilities;
+
 import org.cef.CefClient;
 import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
@@ -51,9 +53,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ProgressBar;
 
-import com.tulin.v8.cef.BrowserFrame;
 import com.tulin.v8.cef.CefBrowserManager;
 import com.tulin.v8.cef.handler.KeyboardHandler;
+import com.tulin.v8.web.utils.WebappManager;
 
 /**
  * CefBrowser的嵌套和调用类
@@ -61,56 +63,32 @@ import com.tulin.v8.cef.handler.KeyboardHandler;
  * @author chenqian
  */
 public class Chromiu extends WebBrowser {
-	private final CefClient client;
-	private final CefBrowser cefbrowser;
-	private final Component browerUI;
+	private Frame awtframe;
+	private CefClient client;
+	private CefBrowser cefbrowser;
+	private Component browerUI;
 
 	protected final String startUrl;
 
 	private Composite parent = null;
-//	private boolean loadding = false;
 	private ProgressBar progressBar;
 
 	public Chromiu(String startUrl) {
 		this.startUrl = startUrl;
-		this.cefbrowser = CefBrowserManager.createCefBrowser(startUrl, false, false);
-		this.client = cefbrowser.getClient();
-		this.browerUI = cefbrowser.getUIComponent();
 	}
 
-	@Override
-	public void create(Composite parent, int style) {
-		this.parent = parent;
-		GridLayout mlay = new GridLayout();
-		mlay.horizontalSpacing = 0;
-		mlay.verticalSpacing = 0;
-		mlay.marginLeft = 0;
-		mlay.marginTop = 0;
-		mlay.marginRight = 0;
-		mlay.marginBottom = 0;
-		mlay.marginWidth = 0;
-		mlay.marginHeight = 0;
-		parent.setLayout(mlay);
-		GridData ply = new GridData(GridData.FILL_HORIZONTAL);
-		ply.heightHint = 2;
-		progressBar = new ProgressBar(parent, SWT.HORIZONTAL | SWT.SMOOTH | SWT.INDETERMINATE);
-		progressBar.setLayoutData(ply);
-		progressBar.setVisible(false);
-		Composite composite = new Composite(parent, SWT.EMBEDDED);
-		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-		composite.setLayout(new FillLayout());
-		Frame awtframe = SWT_AWT.new_Frame(composite);
-		awtframe.setLayout(new BorderLayout());
-		awtframe.add(browerUI, BorderLayout.CENTER);
-//		if (startUrl != null && !"".equals(startUrl)) {
-//			loadding = true;
-//		}
+	private void createCefbrowser(String url) {
+		if (cefbrowser != null) {
+			cefbrowser.close(true);
+		}
+		this.cefbrowser = CefBrowserManager.createCefBrowser(url, false, false);
+		this.client = cefbrowser.getClient();
+		this.browerUI = cefbrowser.getUIComponent();
 		client.removeLoadHandler();
 		client.addLoadHandler(new CefLoadHandlerAdapter() {
 			@Override
 			public void onLoadingStateChange(CefBrowser browser, boolean isLoading, boolean canGoBack,
 					boolean canGoForward) {
-//				loadding = isLoading;
 				showProgressBar(isLoading);
 				LoadEvent levent = new LoadEvent(parent);
 				levent.browser = browser;
@@ -124,7 +102,6 @@ public class Chromiu extends WebBrowser {
 
 			@Override
 			public void onLoadStart(CefBrowser browser, CefFrame frame, TransitionType transitionType) {
-//				loadding = true;
 				ProgressEvent pevent = new ProgressEvent(parent);
 				pevent.current = 0;
 				pevent.total = 100;
@@ -142,7 +119,6 @@ public class Chromiu extends WebBrowser {
 
 			@Override
 			public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
-//				loadding = false;
 				ProgressEvent pevent = new ProgressEvent(parent);
 				pevent.current = 100;
 				pevent.total = 100;
@@ -161,7 +137,6 @@ public class Chromiu extends WebBrowser {
 			@Override
 			public void onLoadError(CefBrowser browser, CefFrame frame, ErrorCode errorCode, String errorText,
 					String failedUrl) {
-//				loadding = false;
 				LoadEvent levent = new LoadEvent(parent);
 				levent.browser = browser;
 				levent.frame = frame;
@@ -181,21 +156,33 @@ public class Chromiu extends WebBrowser {
 				if (openWindowListeners.length > 0) {
 					WindowEvent wevent = new WindowEvent(parent);
 					wevent.required = false;
+					wevent.cefBrowser = browser;
+					wevent.cefFrame = frame;
+					wevent.url = target_url;
+					wevent.name = target_frame_name;
 					wevent.browser = Chromiu.this.browser;
 					for (OpenWindowListener openWindowListener : openWindowListeners) {
 						openWindowListener.open(wevent);
 					}
 					return wevent.required;
 				} else {
-					new BrowserFrame(target_url, false, false).open();
-					return true;// 返回true表示取消弹出窗口
+					try {
+						Chromiu.this.browser.getDisplay().asyncExec(() -> {
+							new BrowserDialog(Chromiu.this.browser.getShell(), target_frame_name, target_url).open();
+						});
+						return true;// 返回true表示取消弹出窗口
+					} catch (Exception ignored) {
+					}
 				}
+				return false;
 			}
 
 			@Override
 			public boolean doClose(CefBrowser browser) {
 				WindowEvent wevent = new WindowEvent(parent);
 				wevent.required = false;
+				wevent.cefBrowser = browser;
+				wevent.url = browser.getURL();
 				wevent.browser = Chromiu.this.browser;
 				for (CloseWindowListener closeWindowListener : closeWindowListeners) {
 					closeWindowListener.close(wevent);
@@ -331,21 +318,6 @@ public class Chromiu extends WebBrowser {
 				return super.getAuthCredentials(browser, origin_url, isProxy, host, port, realm, scheme, callback);
 			}
 		});
-//		client.removeDownloadHandler();
-//		client.addDownloadHandler(new CefDownloadHandlerAdapter() {
-//			@Override
-//			public boolean onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem, String suggestedName,
-//					CefBeforeDownloadCallback callback) {
-//				callback.Continue("", true);
-//				return true;
-//			}
-//
-//			@Override
-//			public void onDownloadUpdated(CefBrowser browser, CefDownloadItem downloadItem,
-//					CefDownloadItemCallback callback) {
-//				showDownLoadDialog(browser, downloadItem, callback);
-//			}
-//		});
 		// 处理JS消息提示框
 		client.removeJSDialogHandler();
 		client.addJSDialogHandler(new CefJSDialogHandlerAdapter() {
@@ -390,6 +362,37 @@ public class Chromiu extends WebBrowser {
 			}
 		}, true);
 		client.addMessageRouter(msgRouter);
+		if (awtframe != null) {
+			awtframe.removeAll();
+			awtframe.add(browerUI, BorderLayout.CENTER);
+		}
+	}
+
+	@Override
+	public void create(Composite parent, int style) {
+		this.parent = parent;
+		GridLayout mlay = new GridLayout();
+		mlay.horizontalSpacing = 0;
+		mlay.verticalSpacing = 0;
+		mlay.marginLeft = 0;
+		mlay.marginTop = 0;
+		mlay.marginRight = 0;
+		mlay.marginBottom = 0;
+		mlay.marginWidth = 0;
+		mlay.marginHeight = 0;
+		parent.setLayout(mlay);
+		GridData ply = new GridData(GridData.FILL_HORIZONTAL);
+		ply.heightHint = 2;
+		progressBar = new ProgressBar(parent, SWT.HORIZONTAL | SWT.SMOOTH | SWT.INDETERMINATE);
+		progressBar.setLayoutData(ply);
+		progressBar.setVisible(false);
+		Composite composite = new Composite(parent, SWT.EMBEDDED);
+		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
+		composite.setLayout(new FillLayout());
+		createCefbrowser(startUrl);
+		awtframe = SWT_AWT.new_Frame(composite);
+		awtframe.setLayout(new BorderLayout());
+		awtframe.add(browerUI, BorderLayout.CENTER);
 	}
 
 	public void showProgressBar(boolean isShow) {
@@ -397,22 +400,6 @@ public class Chromiu extends WebBrowser {
 			progressBar.setVisible(isShow);
 		});
 	}
-
-//	private DownLoadDialog downLoadDialog;
-
-//	private void showDownLoadDialog(CefBrowser browser, CefDownloadItem downloadItem,
-//			CefDownloadItemCallback callback) {
-//		if (downloadItem.isValid() && downloadItem.getFullPath() != null) {
-//			parent.getDisplay().asyncExec(() -> {
-//				if (downLoadDialog == null || downLoadDialog.isDisposed()) {
-//					downLoadDialog = new DownLoadDialog(parent.getShell());
-//					downLoadDialog.setMessage(downloadItem.getFullPath());
-//					downLoadDialog.setFullPath(downloadItem.getFullPath());
-//					downLoadDialog.open();
-//				}
-//			});
-//		}
-//	}
 
 	protected CefClient getCefClient() {
 		return client;
@@ -534,7 +521,8 @@ public class Chromiu extends WebBrowser {
 				String installDir = userHomeDirectory + File.separator + ".browser";
 				File thtml = new File(installDir + File.separator + UUID.randomUUID().toString() + ".html");
 				textTemp = thtml.getAbsolutePath();
-				setUrl(textTemp);
+				String url = WebappManager.filePathToURL(textTemp);
+				setUrl(url);
 				return true;
 			} catch (Exception e) {
 			}
@@ -549,24 +537,11 @@ public class Chromiu extends WebBrowser {
 	 * @return
 	 */
 	public synchronized boolean setUrl(String url) {
-//		new Thread(() -> {
-//			if (!loadding) {
-//				try {
-//					Thread.sleep(300);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//			while (loadding && parent != null && !parent.isDisposed()) {
-//				try {
-//					Thread.sleep(1);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//			cefbrowser.loadURL(url);
-//		}).start();
-		cefbrowser.loadURL(url);
+		SwingUtilities.invokeLater(() -> {
+			if (url != null && !url.equals(startUrl)) {
+				createCefbrowser(url);
+			}
+		});
 		return true;
 	}
 

@@ -8,7 +8,16 @@
 <dependency>
   <groupId>com.tlv8.chromium</groupId>
   <artifactId>tlv8.swt.browser.chromium.win32.win32.x86_64</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.1</version>
+</dependency>
+```
+
+- Windows arm64
+```
+<dependency>
+  <groupId>com.tlv8.chromium</groupId>
+  <artifactId>tlv8.swt.browser.chromium.win.arm64</artifactId>
+  <version>2.1.1</version>
 </dependency>
 ```
 
@@ -17,7 +26,7 @@
 <dependency>
   <groupId>com.tlv8.chromium</groupId>
   <artifactId>tlv8.swt.browser.chromium.gtk.linux.x86_64</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.1</version>
 </dependency>
 ```
 
@@ -26,7 +35,7 @@
 <dependency>
   <groupId>com.tlv8.chromium</groupId>
   <artifactId>tlv8.swt.browser.chromium.gtk.linux.arm64</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.1</version>
 </dependency>
 ```
 
@@ -35,7 +44,7 @@
 <dependency>
   <groupId>com.tlv8.chromium</groupId>
   <artifactId>tlv8.swt.browser.chromium.macosx.x86_64</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.1</version>
 </dependency>
 ```
 
@@ -44,7 +53,7 @@
 <dependency>
   <groupId>com.tlv8.chromium</groupId>
   <artifactId>tlv8.swt.browser.chromium.macosx.aarch64</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.1</version>
 </dependency>
 ```
 
@@ -52,7 +61,6 @@
 
 ```
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -61,25 +69,20 @@ import com.tulin.v8.swt.chromium.Browser;
 import com.tulin.v8.swt.chromium.LoadEvent;
 import com.tulin.v8.swt.chromium.LoadListenerAdapter;
 
-public class Main {
+public class BrowserTest {
 	public static void main(String[] args) {
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display, SWT.MIN | SWT.MAX | SWT.CLOSE | SWT.RESIZE);
-
-		shell.setLocation(new Point(800, 600));
 		shell.setText("Chromium Test");
-		shell.setLocation(20, 20);
-
 		shell.setLayout(new FillLayout());
 		Browser browser = new Browser(shell, SWT.NONE, "https://tlv8.com");
 		browser.addLoadListener(new LoadListenerAdapter() {
 			@Override
 			public void onLoadEnd(LoadEvent event) {
-				System.out.println("加载完成：" + event.httpStatusCode);
+				System.out.println("load end:" + event.httpStatusCode);
 				super.onLoadEnd(event);
 			}
 		});
-
 		shell.open();
 
 		while (!shell.isDisposed()) {
@@ -89,6 +92,7 @@ public class Main {
 
 		System.exit(0);
 	}
+
 }
 ```
 

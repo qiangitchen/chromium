@@ -1,5 +1,7 @@
 package com.tulin.v8.swt.chromium;
 
+import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -67,6 +69,20 @@ public class WindowEvent extends TypedEvent {
 	 */
 	public boolean toolBar;
 
+	public CefBrowser cefBrowser;
+
+	public CefFrame cefFrame;
+
+	/**
+	 * open url
+	 */
+	public String url;
+
+	/**
+	 * open page name
+	 */
+	public String name;
+
 	public WindowEvent(Widget widget) {
 		super(widget);
 	}
@@ -77,6 +93,7 @@ public class WindowEvent extends TypedEvent {
 		return string.substring(0, string.length() - 1) // remove trailing '}'
 				+ " required=" + required + " browser=" + browser + " location=" + location + " size=" + size
 				+ " addressBar=" + addressBar + " menuBar=" + menuBar + " statusBar=" + statusBar + " toolBar="
-				+ toolBar + "}";
+				+ toolBar + " cefBrowser=" + cefBrowser + " cefFrame=" + cefFrame + " url=" + url + " name=" + name
+				+ "}";
 	}
 }

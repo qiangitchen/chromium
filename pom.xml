@@ -2,13 +2,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>com.tlv8.chromium</groupId>
 	<artifactId>tlv8.swt.browser.chromium</artifactId>
-	<version>2.1.0</version>
-	
+	<version>2.1.1</version>
+
 	<packaging>pom</packaging>
-	
+
 	<name>tlv8.swt.browser.chromium</name>
 	<description>Chrome browser based on eclipse swt</description>
 	<url>https://github.com/qiangitchen/chromium</url>
@@ -17,7 +17,129 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>17</java.version>
+		<jcefmaven.version>127.3.1</jcefmaven.version>
+		<jcef-natives.version>jcef-99c2f7a+cef-127.3.1+g6cbb30e+chromium-127.0.6533.100</jcef-natives.version>
+		<swt.version>3.127.0</swt.version>
+		<jface.version>3.35.0</jface.version>
 	</properties>
+
+	<!-- 依赖声明 -->
+	<dependencyManagement>
+		<dependencies>
+			<!-- jcef api -->
+			<dependency>
+				<groupId>me.friwi</groupId>
+				<artifactId>jcefmaven</artifactId>
+				<version>${jcefmaven.version}</version>
+			</dependency>
+
+			<!-- Windows x86_64 【win7最高支持108】-->
+			<dependency>
+				<groupId>me.friwi</groupId>
+				<artifactId>jcef-natives-windows-amd64</artifactId>
+				<version>${jcef-natives.version}</version>
+			</dependency>
+
+			<!-- Windows arm64 -->
+			<dependency>
+				<groupId>me.friwi</groupId>
+				<artifactId>jcef-natives-windows-arm64</artifactId>
+				<version>${jcef-natives.version}</version>
+			</dependency>
+
+			<!-- Linux x86_64 -->
+			<dependency>
+				<groupId>me.friwi</groupId>
+				<artifactId>jcef-natives-linux-amd64</artifactId>
+				<version>${jcef-natives.version}</version>
+			</dependency>
+
+			<!-- Linux arm64 -->
+			<dependency>
+				<groupId>me.friwi</groupId>
+				<artifactId>jcef-natives-linux-arm64</artifactId>
+				<version>${jcef-natives.version}</version>
+			</dependency>
+
+			<!-- MacOS x86_64 -->
+			<dependency>
+				<groupId>me.friwi</groupId>
+				<artifactId>jcef-natives-macosx-amd64</artifactId>
+				<version>${jcef-natives.version}</version>
+			</dependency>
+
+			<!-- MacOS arm64-->
+			<dependency>
+				<groupId>me.friwi</groupId>
+				<artifactId>jcef-natives-macosx-arm64</artifactId>
+				<version>${jcef-natives.version}</version>
+			</dependency>
+			
+			<!--linux x64 swt相关依赖-->
+			<dependency>
+				<groupId>org.eclipse.platform</groupId>
+				<artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+				<version>${swt.version}</version>
+			</dependency>
+			
+			<!--linux aarch64 swt相关依赖-->
+			<dependency>
+				<groupId>org.eclipse.platform</groupId>
+				<artifactId>org.eclipse.swt.gtk.linux.aarch64</artifactId>
+				<version>${swt.version}</version>
+			</dependency>
+			
+			<!--macosx x86_64 swt相关依赖-->
+			<dependency>
+				<groupId>org.eclipse.platform</groupId>
+				<artifactId>org.eclipse.swt.cocoa.macosx.x86_64</artifactId>
+				<version>${swt.version}</version>
+			</dependency>
+			
+			<!--macosx aarch64 swt相关依赖-->
+			<dependency>
+				<groupId>org.eclipse.platform</groupId>
+				<artifactId>org.eclipse.swt.cocoa.macosx.aarch64</artifactId>
+				<version>${swt.version}</version>
+			</dependency>
+			
+			<!--windows x64 swt相关依赖-->
+			<dependency>
+				<groupId>org.eclipse.platform</groupId>
+				<artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
+				<version>${swt.version}</version>
+			</dependency>
+			
+			<!--windows aarch64 swt相关依赖-->
+			<dependency>
+			    <groupId>org.eclipse.platform</groupId>
+			    <artifactId>org.eclipse.swt.win32.win32.aarch64</artifactId>
+			   <version>${swt.version}</version>
+			</dependency>
+
+			<!-- jface -->
+			<dependency>
+				<groupId>org.eclipse.platform</groupId>
+				<artifactId>org.eclipse.jface</artifactId>
+				<version>${jface.version}</version>
+			</dependency>
+			
+			<!-- ali fastjson -->
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>fastjson</artifactId>
+				<version>2.0.53</version>
+			</dependency>
+			
+			<!-- base -->
+			<dependency>
+				<groupId>com.tlv8.chromium</groupId>
+				<artifactId>tlv8.swt.browser.chromium.jcef</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
 
 	<licenses>
 		<license>
@@ -40,11 +162,13 @@
 	</distributionManagement>
 
 	<modules>
+		<module>swt-chromium</module>
 		<module>swt-chromium-linux64</module>
 		<module>swt-chromium-linux-arm64</module>
 		<module>swt-chromium-macosx64</module>
 		<module>swt-chromium-macosx-arm64</module>
 		<module>swt-chromium-win64</module>
+		<module>swt-chromium-win-arm64</module>
 	</modules>
 
 	<profiles>
