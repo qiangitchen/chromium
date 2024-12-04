@@ -1,6 +1,8 @@
 package com.tulin.v8.swt.chromium;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.TitleEvent;
+import org.eclipse.swt.browser.TitleListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
@@ -57,6 +59,14 @@ public class BrowserDialog extends Dialog {
 	protected void initView(Composite parent) {
 		parent.setLayout(new FillLayout());
 		browser = new Browser(parent, startUrl);
+		browser.addTitleListener(new TitleListener() {
+			@Override
+			public void changed(TitleEvent event) {
+				display.asyncExec(()->{
+					shell.setText(event.title);
+				});
+			}
+		});
 	}
 
 	/**
