@@ -54,7 +54,6 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ProgressBar;
 
 import com.tulin.v8.cef.CefBrowserManager;
-import com.tulin.v8.cef.handler.KeyboardHandler;
 import com.tulin.v8.web.utils.WebappManager;
 
 /**
@@ -192,7 +191,7 @@ public class Chromiu extends WebBrowser {
 		});
 		// 处理键盘事件
 		client.removeKeyboardHandler();
-		addCefKeyboardHandler(new KeyboardHandler());
+		// addCefKeyboardHandler(new KeyboardHandler());
 		client.addKeyboardHandler(new CefKeyboardHandlerAdapter() {
 			@Override
 			public boolean onPreKeyEvent(CefBrowser browser, CefKeyEvent event, BoolRef is_keyboard_shortcut) {
@@ -208,6 +207,21 @@ public class Chromiu extends WebBrowser {
 
 			public boolean onKeyEvent(CefBrowser browser, CefKeyEvent event) {
 				boolean res = false;
+				if (event.type == CefKeyEvent.EventType.KEYEVENT_KEYUP) {
+					// System.out.println("windows_key_code:" + cefKeyEvent.windows_key_code);
+					switch (event.windows_key_code) {
+					// F5 刷新
+					case 116:
+						browser.reload();
+						break;
+					// F12 开发者工具
+					case 123:
+						devToolsShow(browser);
+						break;
+					default:
+						res = false;
+					}
+				}
 				for (CefKeyboardHandler cefKeyboardHandler : cefKeyboardHandlers) {
 					boolean r = cefKeyboardHandler.onKeyEvent(browser, event);
 					if (r) {
@@ -366,6 +380,19 @@ public class Chromiu extends WebBrowser {
 			awtframe.removeAll();
 			awtframe.add(browerUI, BorderLayout.CENTER);
 		}
+	}
+
+	private DevToolsDialog devToolsDialog;
+
+	private void devToolsShow(CefBrowser cefBrowser) {
+		if (devToolsDialog != null && !devToolsDialog.isClosed()) {
+			devToolsDialog.setActivte();
+			return;
+		}
+		parent.getDisplay().asyncExec(() -> {
+			devToolsDialog = new DevToolsDialog(parent.getShell(), cefBrowser);
+			devToolsDialog.open();
+		});
 	}
 
 	@Override

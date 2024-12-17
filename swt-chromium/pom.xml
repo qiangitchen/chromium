@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.tlv8.chromium</groupId>
 		<artifactId>tlv8.swt.browser.chromium</artifactId>
-		<version>2.1.1</version>
+		<version>2.2.0</version>
 	</parent>
 	
 	<artifactId>tlv8.swt.browser.chromium.jcef</artifactId>
