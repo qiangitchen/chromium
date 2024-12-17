@@ -8,7 +8,7 @@
 <dependency>
   <groupId>com.tlv8.chromium</groupId>
   <artifactId>tlv8.swt.browser.chromium.win32.win32.x86_64</artifactId>
-  <version>2.1.1</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
@@ -17,7 +17,7 @@
 <dependency>
   <groupId>com.tlv8.chromium</groupId>
   <artifactId>tlv8.swt.browser.chromium.win.arm64</artifactId>
-  <version>2.1.1</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
@@ -26,7 +26,7 @@
 <dependency>
   <groupId>com.tlv8.chromium</groupId>
   <artifactId>tlv8.swt.browser.chromium.gtk.linux.x86_64</artifactId>
-  <version>2.1.1</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
@@ -35,7 +35,7 @@
 <dependency>
   <groupId>com.tlv8.chromium</groupId>
   <artifactId>tlv8.swt.browser.chromium.gtk.linux.arm64</artifactId>
-  <version>2.1.1</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
@@ -44,7 +44,7 @@
 <dependency>
   <groupId>com.tlv8.chromium</groupId>
   <artifactId>tlv8.swt.browser.chromium.macosx.x86_64</artifactId>
-  <version>2.1.1</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
@@ -53,7 +53,7 @@
 <dependency>
   <groupId>com.tlv8.chromium</groupId>
   <artifactId>tlv8.swt.browser.chromium.macosx.aarch64</artifactId>
-  <version>2.1.1</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
